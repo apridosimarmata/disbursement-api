@@ -15,6 +15,9 @@ type Config struct {
 	REDIS_PORT string
 
 	WALLET_TRANSACTION_CHANNEL string
+
+	API_KEY                string
+	MOODIEDAM_BANK_API_URL string
 }
 
 func GetConfig() Config {
@@ -27,5 +30,7 @@ func GetConfig() Config {
 		REDIS_HOST:                 os.Getenv("REDIS_HOST"),
 		REDIS_PORT:                 os.Getenv("REDIS_PORT"),
 		WALLET_TRANSACTION_CHANNEL: os.Getenv("WALLET_TRANSACTION_CHANNEL"),
+		API_KEY:                    os.Getenv("API_KEY"),
+		MOODIEDAM_BANK_API_URL:     os.Getenv("MOODIEDAM_BANK_API_URL"),
 	}
 }

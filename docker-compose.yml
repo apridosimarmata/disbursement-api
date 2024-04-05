@@ -16,8 +16,6 @@ services:
     networks:
       - local
     depends_on:
-      redis: 
-        condition: service_healthy
       postgres:
         condition: service_healthy
   postgres:
@@ -36,18 +34,6 @@ services:
       - local
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  redis:
-    container_name: redis
-    image: redis:7.0.0-alpine
-    ports:
-      - "6379:6379"
-    networks:
-      - local
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5

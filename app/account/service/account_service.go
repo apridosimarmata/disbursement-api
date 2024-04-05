@@ -18,13 +18,13 @@ func NewAccountService(dummyBankServiceClient infrastructure.HTTPClient) account
 	}
 }
 
-func (accountService *accountService) GetAccountByNumber(ctx context.Context, number string) (res *response.Response[account.Account], err error) {
-	res = &response.Response[account.Account]{}
-	err = accountService.dummyBankServiceClient.Get(ctx, fmt.Sprintf("/accounts/%s", number), nil, res)
+func (accountService *accountService) GetAccountByNumber(ctx context.Context, number string) (res *account.Account, err error) {
+	response := &response.Response[account.Account]{}
+	err = accountService.dummyBankServiceClient.Get(ctx, fmt.Sprintf("/accounts/%s", number), nil, response)
 	if err != nil {
 		infrastructure.Log(fmt.Sprintf("%s - accountService.httpClient.Get @ accountService.GetAccountByNumber", err.Error()))
 		return nil, err
 	}
 
-	return res, nil
+	return response.Data, nil
 }

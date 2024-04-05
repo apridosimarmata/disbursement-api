@@ -21,11 +21,18 @@ func NewAccountUsecase(services domain.Services) account.AccountUsecase {
 }
 
 func (accountUsecase *accountUsecase) GetAccountByNumber(ctx context.Context, number string) (res *response.Response[account.Account], err error) {
-	account, err := accountUsecase.accountService.GetAccountByNumber(ctx, number)
-	if err != nil {
+	result, err := accountUsecase.accountService.GetAccountByNumber(ctx, number)
+	if err != nil && err.Error() != response.ERROR_NOT_FOUND {
+		infrastructure.Log(fmt.Sprintf("%s - accountUsecase.accountService.GetAccountByNumber @ accountUsecase.GetAccountByNumber", err.Error()))
+		return nil, errors.New(response.ERROR_INTERNAL_SERVER_ERROR)
+	}
+
+	if err != nil && err.Error() == response.ERROR_NOT_FOUND {
 		infrastructure.Log(fmt.Sprintf("%s - accountUsecase.accountService.GetAccountByNumber @ accountUsecase.GetAccountByNumber", err.Error()))
 		return nil, errors.New(response.ERROR_ACCOUNT_NOT_FOUND)
 	}
 
-	return account, nil
+	return &response.Response[account.Account]{
+		Data: result,
+	}, nil
 }

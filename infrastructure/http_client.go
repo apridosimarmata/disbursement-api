@@ -3,15 +3,17 @@ package infrastructure
 import (
 	"bytes"
 	"context"
+	"disbursement/domain/common/response"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type HTTPClient interface {
 	Get(ctx context.Context, path string, queryParams map[string]string, result interface{}) (err error)
-	Post(ctx context.Context, path string, body map[string]interface{}, result interface{}) (err error)
+	Post(ctx context.Context, path string, body interface{}, result interface{}) (err error)
 }
 
 type httpClient struct {
@@ -21,7 +23,11 @@ type httpClient struct {
 
 func NewHTTPClient(serverBaseUrl string) HTTPClient {
 	return &httpClient{
-		client:        http.Client{},
+		client: http.Client{
+			Transport: &http.Transport{
+				ResponseHeaderTimeout: time.Second * 6,
+			},
+		},
 		serverBaseUrl: serverBaseUrl,
 	}
 }
@@ -62,14 +68,15 @@ func (client *httpClient) Get(ctx context.Context, path string, queryParams map[
 	return nil
 }
 
-func (client *httpClient) Post(ctx context.Context, path string, body map[string]interface{}, result interface{}) (err error) {
+func (client *httpClient) Post(ctx context.Context, path string, body interface{}, result interface{}) (err error) {
 	reqBody, err := json.Marshal(body)
 	if err != nil {
 		Log(fmt.Sprintf("%s - json.Marshal @ httpClient.Post", err.Error()))
 		return err
 	}
 
-	request, err := http.NewRequest("POST", client.serverBaseUrl+path, bytes.NewBuffer(reqBody))
+	reqUrl := client.serverBaseUrl + path
+	request, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(reqBody))
 	if err != nil {
 		Log(fmt.Sprintf("%s - http.NewRequest @ httpClient.Post", err.Error()))
 		return err
@@ -102,9 +109,11 @@ func (client *httpClient) validateResponseBasedOnStatusCode(code int) (err error
 	}
 
 	switch {
-	case 400 >= code && code <= 499:
+	case code == 404:
+		return errors.New(response.ERROR_NOT_FOUND)
+	case code >= 400:
 		return errors.New("client error")
-	case 500 >= code && code <= 599:
+	case code >= 500 && code <= 599:
 		return errors.New("server error")
 	}
 

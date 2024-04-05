@@ -7,14 +7,6 @@
 
 Used to store disbursements data
 
-### 2. Redis
-
-Used to store tokens as key and wallet id as value\
-Also provide distributed lock (in case locks are being used in multiple pod/machine) to prevent race condition on `deposits` and `withdrawal`\
-Redlock (implemented with redsync) also provide TTL for each lock to prevent deadlock.\
-
-## How to setup
-
 
 ## How to setup
 
@@ -29,35 +21,17 @@ Redlock (implemented with redsync) also provide TTL for each lock to prevent dea
 
 ## Service Description
 
-### Account
+### Mock server
 
-Path -> `/api/v1/accounts\
+The mock server was created with Postman Mockserver
 
-GET `/api/v1/accounts/{number}`\
+url: https://91d6ea63-ae7f-4167-936f-699986c9fa36.mock.pstmn.io/api/v1/
 
+documention: https://documenter.getpostman.com/view/34064887/2sA35LVzKC
 
-```
-GET /api/v1/accounts/211833558
+### Disbursement API
 
-{
-    "status": "success",
-    "data": {
-        "name": "name 1",
-        "number": "211833558"
-    }
-}
-```
+documentation: https://documenter.getpostman.com/view/34064887/2sA35LVzKA
 
-
-```
-GET /api/v1/accounts/211833553
-
-{
-    "status": "fail",
-    "data": {
-        "error": "account not found"
-    }
-}
-```
 
 ## Happy testing :)

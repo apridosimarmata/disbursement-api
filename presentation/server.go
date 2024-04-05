@@ -9,6 +9,7 @@ import (
 
 	disbursementDelivery "disbursement/app/disbursement/delivery"
 	disbursementRepository "disbursement/app/disbursement/repository"
+	disbursementService "disbursement/app/disbursement/service"
 	disbursementUsecase "disbursement/app/disbursement/usecase"
 
 	"disbursement/domain"
@@ -30,28 +31,7 @@ func InitServer() chi.Router {
 	// redisClient := infrastructure.NewRedisClient(ctx, config)
 	// cache := infrastructure.NewCache(redisClient)
 
-	dummyBankServiceClient := infrastructure.NewHTTPClient("https://91d6ea63-ae7f-4167-936f-699986c9fa36.mock.pstmn.io/api/v1")
-
-	/***
-
-	{
-		"status" : "success",
-		"data" : {
-			"createdAt": 1712226994,
-			"name": "name 1",
-			"number": "211833558",
-			"id": "1"
-		}
-	}
-
-	{
-		"status" : "error",
-		"data" : {
-			"message" : "account not found"
-		}
-	}
-
-	***/
+	dummyBankServiceClient := infrastructure.NewHTTPClient(config.MOODIEDAM_BANK_API_URL)
 
 	// redsync for distributed mutual exclusion
 	// pool := goredis.NewPool(&redisClient)
@@ -62,7 +42,8 @@ func InitServer() chi.Router {
 	}
 
 	services := domain.Services{
-		AccountService: accountService.NewAccountService(dummyBankServiceClient),
+		AccountService:      accountService.NewAccountService(dummyBankServiceClient),
+		DisbursementService: disbursementService.NewDisbursementService(dummyBankServiceClient),
 	}
 
 	usecases := domain.Usecases{
@@ -70,8 +51,10 @@ func InitServer() chi.Router {
 		DisbursementUsecase: disbursementUsecase.NewDisbursementUsecase(repositories, services),
 	}
 
+	httpRequestMiddleware := infrastructure.NewHttpRequestMiddleware(config.API_KEY)
+
 	accountDelivery.SetAccountHandler(router, usecases)
-	disbursementDelivery.SetDisbursementHandler(router, usecases)
+	disbursementDelivery.SetDisbursementHandler(router, usecases, httpRequestMiddleware)
 
 	return router
 }

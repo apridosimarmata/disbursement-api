@@ -18,18 +18,13 @@ func NewDisbursementService(dummyBankServiceClient infrastructure.HTTPClient) di
 	}
 }
 
-func (disbursementService *disbursementService) CreateFundTransferTransaction(ctx context.Context, req []disbursement.DisbursementRequest) (err error) {
+func (disbursementService *disbursementService) DisburseFund(ctx context.Context, req disbursement.DisburseFundRequest) (err error) {
 	var response response.Response[string]
 
-	err = disbursementService.dummyBankServiceClient.Post(ctx, fmt.Sprintf("/accounts/%s", req), nil, response)
+	err = disbursementService.dummyBankServiceClient.Post(ctx, "/disbursements", req, response)
 	if err != nil {
-		infrastructure.Log(fmt.Sprintf("%s - disbursementService.httpClient.Post @ accountService.CreateFundTransferTransaction", err.Error()))
+		infrastructure.Log(fmt.Sprintf("%s - disbursementService.httpClient.Post @ accountService.DisburseFund", err.Error()))
 		return err
-	}
-
-	if response.StatusCode != 200 {
-		infrastructure.Log(fmt.Sprintf("%s - @ accountService.CreateFundTransferTransaction", response.Status))
-		return
 	}
 
 	return nil

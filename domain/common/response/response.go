@@ -11,12 +11,24 @@ const (
 	STATUS_ERROR   = "error"
 
 	ERROR_ACCOUNT_NOT_FOUND     = "account not found"
+	ERROR_UNAUTHORIZED          = "unauthorized"
 	ERROR_INTERNAL_SERVER_ERROR = "an error occured during processing your request, try again later"
+
+	ERROR_DISBURSEMENT_NOT_FOUND                     = "no such disbursement"
+	ERROR_UNRECOGNIZED_DISBURSEMENT_STATUS           = "unrecognized disbursement status"
+	ERROR_DISBURSEMENT_STATUS_ALREADY_UPDATED_BEFORE = "could not update disbursement status again"
+
+	// for http client interacting with external service
+	ERROR_NOT_FOUND = "not found"
 )
 
 var (
 	userErrors = map[string]struct{}{
-		ERROR_ACCOUNT_NOT_FOUND: {},
+		ERROR_ACCOUNT_NOT_FOUND:                          {},
+		ERROR_UNAUTHORIZED:                               {},
+		ERROR_DISBURSEMENT_NOT_FOUND:                     {},
+		ERROR_UNRECOGNIZED_DISBURSEMENT_STATUS:           {},
+		ERROR_DISBURSEMENT_STATUS_ALREADY_UPDATED_BEFORE: {},
 	}
 )
 
