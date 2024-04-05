@@ -35,9 +35,10 @@ Path -> `/api/v1/accounts\
 
 GET `/api/v1/accounts/{number}`\
 
-GET `/api/v1/accounts/211833558`\
 
 ```
+GET /api/v1/accounts/211833558
+
 {
     "status": "success",
     "data": {
@@ -47,9 +48,10 @@ GET `/api/v1/accounts/211833558`\
 }
 ```
 
-GET `/api/v1/accounts/211833553`\
 
 ```
+GET /api/v1/accounts/211833553
+
 {
     "status": "fail",
     "data": {
